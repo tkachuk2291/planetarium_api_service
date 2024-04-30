@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles', 'user', 'planetarium'
+    'django.contrib.staticfiles', 'user', 'planetarium', 'rest_framework'
 ]
 
 MIDDLEWARE = [
