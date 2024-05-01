@@ -19,6 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/cinema/v1/", include("planetarium.urls", namespace="planetarium")),
+    path("api/planetarium/v1/", include("planetarium.urls", namespace="planetarium")),
+    path("__debug__/", include("debug_toolbar.urls")),
 ]
 # path("api/user/v1/", include("user.urls", namespace="register")),

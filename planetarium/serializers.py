@@ -54,18 +54,19 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TicketListSerializer(TicketSerializer):
-    show_session = serializers.CharField(source="show_session.astronomy_show.title")
-    reservation = serializers.CharField(source="reservation.user")
+    show_session = serializers.CharField(source="show_session.astronomy_show.title", read_only=True)
+    reservation = serializers.CharField(source="reservation.user", read_only=True)
+    planetarium_dome = serializers.CharField(source="show_session.planetarium_dome.name", read_only=True)
 
     class Meta:
         model = Ticket
-        fields = ("id", "row", "seat", "show_session", "reservation")
+        fields = ("id", "row", "seat", "show_session", "reservation", "planetarium_dome")
 
 
 class TicketCreateSerializer(TicketSerializer):
     class Meta:
         model = Ticket
-        fields = ("id", "row", "seat", "show_session", "reservation")
+        fields = ("id", "row", "seat", "show_session")
 
 
 class UserTicketSerializer(UserSerializer):
@@ -127,8 +128,8 @@ class TicketDetailSerializer(serializers.ModelSerializer):
 
 
 class AstronomyShowListSerializer(AstronomyShowSerializer):
-    show_name = serializers.CharField(source="title")
-    show_theme = ShowThemeSerializer(many=True)
+    show_name = serializers.CharField(source="title", read_only=True)
+    show_theme = ShowThemeSerializer(many=True, read_only=True)
 
     class Meta:
         model = AstronomyShow
@@ -145,7 +146,7 @@ class AstronomyShowCreateSerializer(AstronomyShowSerializer):
 
 
 class PlanetariumDomeListSerializer(PlanetariumDomeSerializer):
-    planetarium_name = serializers.CharField(source="name")
+    planetarium_name = serializers.CharField(source="name", read_only=True)
 
     class Meta:
         model = PlanetariumDome
@@ -162,8 +163,8 @@ class PlanetariumDomeCreateSerializer(PlanetariumDomeSerializer):
 
 
 class ShowSessionListSerializer(ShowSessionSerializer):
-    astronomy_show = AstronomyShowListSerializer()
-    planetarium_dome = PlanetariumDomeListSerializer()
+    astronomy_show = AstronomyShowListSerializer(read_only=True)
+    planetarium_dome = PlanetariumDomeListSerializer(read_only=True)
 
     class Meta:
         model = ShowSession
@@ -174,3 +175,13 @@ class ShowSessionCreateSerializer(ShowSessionSerializer):
     class Meta:
         model = ShowSession
         fields = ("astronomy_show", "planetarium_dome", "show_time")
+
+
+# """Custom Serializers for model  ShowTheme"""
+#
+#
+# class ShowThemeListSerializer(ShowThemeSerializer):
+#     class Meta:
+#         model = ShowTheme
+#     fields = ("name",)
+

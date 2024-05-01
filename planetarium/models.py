@@ -15,7 +15,7 @@ class ShowTheme(models.Model):
 class ShowSession(models.Model):
     astronomy_show = models.ForeignKey(AstronomyShow, on_delete=models.CASCADE, related_name="show_sessions")
     planetarium_dome = models.ForeignKey("PlanetariumDome", on_delete=models.CASCADE, related_name="dome_sessions")
-    show_time = models.DateTimeField()
+    show_time = models.DateField()
 
 
 class PlanetariumDome(models.Model):
