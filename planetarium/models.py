@@ -9,6 +9,10 @@ class AstronomyShow(models.Model):
     description = models.TextField()
     show_theme = models.ManyToManyField("ShowTheme", related_name="astronomy_shows")
 
+    def __str__(self):
+        show_themes = ', '.join(theme.name for theme in self.show_theme.all())
+        return f"name_show : {self.title} , show_theme : {show_themes}"
+
 
 class ShowTheme(models.Model):
     name = models.CharField(max_length=256)
@@ -18,11 +22,18 @@ class ShowTheme(models.Model):
             UniqueConstraint(fields=['name'], name='unique_name')
         ]
 
+    def __str__(self):
+        return self.name
+
 
 class ShowSession(models.Model):
     astronomy_show = models.ForeignKey(AstronomyShow, on_delete=models.CASCADE, related_name="show_sessions")
     planetarium_dome = models.ForeignKey("PlanetariumDome", on_delete=models.CASCADE, related_name="dome_sessions")
     show_time = models.DateField()
+
+    def __str__(self):
+        return (f"Show session name: {self.astronomy_show.title} ,"
+                f" planetarium: {self.planetarium_dome.name} , show time: {self.show_time}")
 
 
 class PlanetariumDome(models.Model):
@@ -53,6 +64,9 @@ class PlanetariumDome(models.Model):
              update_fields=None):
         self.full_clean()
         return super(PlanetariumDome, self).save(force_insert, force_update, using, update_fields)
+
+    def __str__(self):
+        return f"name : {self.name} , rows : {self.rows} , seats_in_row : {self.seats_in_row}"
 
 
 class Ticket(models.Model):
@@ -88,7 +102,13 @@ class Ticket(models.Model):
         self.full_clean()
         return super(Ticket, self).save(force_insert, force_update, using, update_fields)
 
+    def __str__(self):
+        return f'row:{self.row} - seat:{self.seat} - show_session:{self.show_session} - reservation:{self.reservation.user}'
+
 
 class Reservation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user")
+
+    def __str__(self):
+        return f'reservation for : {self.user}, created at: {self.created_at}'
