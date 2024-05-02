@@ -1,13 +1,23 @@
+import pathlib
+import uuid
+
 from django.db import models
 from django.db.models import UniqueConstraint
+from django.template.defaultfilters import slugify
 
 from planetarium_api_service import settings
+
+
+def astronomy_show_image_path(self, filename):
+    filename = f'{slugify(self.title)}-{uuid.uuid4()}' + pathlib.Path(filename).suffix
+    return pathlib.Path("upload/astronomy_show/") / pathlib.Path(filename)
 
 
 class AstronomyShow(models.Model):
     title = models.CharField(max_length=256)
     description = models.TextField()
-    show_theme = models.ManyToManyField("ShowTheme", related_name="astronomy_shows")
+    show_theme = models.ManyToManyField("ShowTheme", related_name="astronomy_show")
+    image = models.ImageField(upload_to=astronomy_show_image_path, null=True)
 
     def __str__(self):
         show_themes = ', '.join(theme.name for theme in self.show_theme.all())
@@ -36,10 +46,16 @@ class ShowSession(models.Model):
                 f" planetarium: {self.planetarium_dome.name} , show time: {self.show_time}")
 
 
+def image_path(self, filename):
+    filename = f'{slugify(self.name)}-{uuid.uuid4()}' + pathlib.Path(filename).suffix
+    return pathlib.Path("upload/planetarium_dome/") / pathlib.Path(filename)
+
+
 class PlanetariumDome(models.Model):
     name = models.CharField(max_length=256)
     rows = models.IntegerField()
     seats_in_row = models.IntegerField()
+    image = models.ImageField(upload_to=image_path, null=True)
 
     class Meta:
         constraints = [

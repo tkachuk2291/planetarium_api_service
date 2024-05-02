@@ -1,9 +1,12 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from planetarium.models import Ticket, AstronomyShow, PlanetariumDome, ShowSession, Reservation, ShowTheme
 from planetarium.serializers import TicketSerializer, TicketDetailSerializer, TicketCreateSerializer, \
     TicketListSerializer, AstronomyShowListSerializer, AstronomyShowCreateSerializer, PlanetariumDomeListSerializer, \
-    PlanetariumDomeCreateSerializer, ShowSessionListSerializer, ShowSessionCreateSerializer, ShowThemeSerializer
+    PlanetariumDomeCreateSerializer, ShowSessionListSerializer, ShowSessionCreateSerializer, ShowThemeSerializer, \
+    PlanetariumDomeImageSerializer
 
 
 class TicketViewSet(viewsets.ModelViewSet):
@@ -47,7 +50,21 @@ class AstronomyShowViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return AstronomyShowListSerializer
+        elif self.action == "upload_image":
+            return PlanetariumDomeImageSerializer
         return AstronomyShowCreateSerializer
+
+    @action(methods=['POST'],
+            detail=True,
+            url_path='upload-image')
+    def upload_image(self, request):
+        astronomy_show = self.get_object()
+        serializer = self.get_serializer(astronomy_show, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     """filtering for query_params 'title', 'description' , 'show_theme' """
 
@@ -71,11 +88,6 @@ class PlanetariumDomeViewSet(viewsets.ModelViewSet):
     serializer_class = PlanetariumDomeListSerializer
     """filtering for query_params 'planetarium_name' , 'rows' , 'seats_in_row' """
 
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return PlanetariumDomeListSerializer
-        return PlanetariumDomeCreateSerializer
-
     def get_queryset(self):
         planetarium_name = self.request.query_params.get("planetarium_name")
         rows = self.request.query_params.get("rows")
@@ -89,6 +101,24 @@ class PlanetariumDomeViewSet(viewsets.ModelViewSet):
         if seats_in_row:
             queryset = queryset.filter(seats_in_row=seats_in_row)
         return queryset.distinct()
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return PlanetariumDomeListSerializer
+        elif self.action == "upload_image":
+            return PlanetariumDomeImageSerializer
+        return PlanetariumDomeCreateSerializer
+
+    @action(methods=['POST'],
+            detail=True,
+            url_path='upload-image')
+    def upload_image(self, request):
+        bus = self.get_object()
+        serializer = self.get_serializer(bus, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShowSessionViewSet(viewsets.ModelViewSet):

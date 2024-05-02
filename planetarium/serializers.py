@@ -30,7 +30,7 @@ class ShowSessionSerializer(serializers.ModelSerializer):
 class PlanetariumDomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanetariumDome
-        fields = ("rows", "seats_in_row")
+        fields = ("rows", "seats_in_row", "image")
 
     def validate(self, attrs):
         PlanetariumDome.validate_row_seats_in_row(
@@ -38,6 +38,7 @@ class PlanetariumDomeSerializer(serializers.ModelSerializer):
             attrs["seats_in_row"],
             serializers.ValidationError
         )
+        return attrs
 
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -156,7 +157,7 @@ class AstronomyShowListSerializer(AstronomyShowSerializer):
 
     class Meta:
         model = AstronomyShow
-        fields = ("show_name", "description", "show_theme",)
+        fields = ("show_name", "description", "show_theme", "image")
 
 
 class AstronomyShowCreateSerializer(AstronomyShowSerializer):
@@ -165,7 +166,13 @@ class AstronomyShowCreateSerializer(AstronomyShowSerializer):
 
     class Meta:
         model = AstronomyShow
-        fields = ("title", "description", "show_theme",)
+        fields = ("title", "description", "show_theme", "image")
+
+
+class AstronomyShowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlanetariumDome
+        fields = ("id", "image")
 
 
 """Custom Serializers for model Planetarium Dome"""
@@ -176,7 +183,7 @@ class PlanetariumDomeListSerializer(PlanetariumDomeSerializer):
 
     class Meta:
         model = PlanetariumDome
-        fields = ("planetarium_name", "rows", "seats_in_row")
+        fields = ("planetarium_name", "rows", "seats_in_row", "image")
 
 
 class PlanetariumDomeCreateSerializer(PlanetariumDomeSerializer):
@@ -187,7 +194,13 @@ class PlanetariumDomeCreateSerializer(PlanetariumDomeSerializer):
 
     class Meta:
         model = PlanetariumDome
-        fields = ("name", "rows", "seats_in_row")
+        fields = ("name", "rows", "seats_in_row", "image")
+
+
+class PlanetariumDomeImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlanetariumDome
+        fields = ("id", "image")
 
 
 """Custom Serializers for model ShowSessionSerializer"""
