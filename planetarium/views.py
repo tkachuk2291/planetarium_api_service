@@ -120,8 +120,6 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
         return queryset.distinct()
 
 
-# Фильтрация по дате
-
 class ShowThemeViewSet(viewsets.ModelViewSet):
     queryset = ShowTheme.objects.all()
     serializer_class = ShowThemeSerializer

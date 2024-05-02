@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
 from planetarium.models import (
     Ticket, Reservation, ShowSession, AstronomyShow, PlanetariumDome, ShowTheme,
@@ -29,7 +30,14 @@ class ShowSessionSerializer(serializers.ModelSerializer):
 class PlanetariumDomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanetariumDome
-        fields = ("name", "rows", "seats_in_row")
+        fields = ("rows", "seats_in_row")
+
+    def validate(self, attrs):
+        PlanetariumDome.validate_row_seats_in_row(
+            attrs["rows"],
+            attrs["seats_in_row"],
+            serializers.ValidationError
+        )
 
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -67,6 +75,21 @@ class TicketCreateSerializer(TicketSerializer):
     class Meta:
         model = Ticket
         fields = ("id", "row", "seat", "show_session")
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Ticket.objects.all(),
+                fields=['row', 'seat']
+            )
+        ]
+
+    def validate(self, attrs):
+        Ticket.validate_seats_row(
+            attrs["row"],
+            attrs["show_session"].planetarium_dome.rows,
+            attrs["seat"],
+            attrs["show_session"].planetarium_dome.seats_in_row,
+            serializers.ValidationError
+        )
 
 
 class UserTicketSerializer(UserSerializer):
@@ -137,6 +160,9 @@ class AstronomyShowListSerializer(AstronomyShowSerializer):
 
 
 class AstronomyShowCreateSerializer(AstronomyShowSerializer):
+    title = serializers.CharField(validators=[UniqueValidator(
+        queryset=AstronomyShow.objects.all())])
+
     class Meta:
         model = AstronomyShow
         fields = ("title", "description", "show_theme",)
@@ -154,6 +180,11 @@ class PlanetariumDomeListSerializer(PlanetariumDomeSerializer):
 
 
 class PlanetariumDomeCreateSerializer(PlanetariumDomeSerializer):
+    name = serializers.CharField(
+        validators=[UniqueValidator(
+            queryset=PlanetariumDome.objects.all())]
+    )
+
     class Meta:
         model = PlanetariumDome
         fields = ("name", "rows", "seats_in_row")
@@ -177,11 +208,12 @@ class ShowSessionCreateSerializer(ShowSessionSerializer):
         fields = ("astronomy_show", "planetarium_dome", "show_time")
 
 
-# """Custom Serializers for model  ShowTheme"""
-#
-#
-# class ShowThemeListSerializer(ShowThemeSerializer):
-#     class Meta:
-#         model = ShowTheme
-#     fields = ("name",)
+class ShowThemeCreateSerializer(ShowThemeSerializer):
+    name = serializers.CharField(read_only=True,
+                                 validators=[UniqueValidator(
+                                     queryset=PlanetariumDome.objects.all())]
+                                 )
 
+    class Meta:
+        model = ShowTheme
+        fields = ("name",)
