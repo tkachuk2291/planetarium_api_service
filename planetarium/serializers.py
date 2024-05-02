@@ -5,6 +5,7 @@ from planetarium.models import (
     Ticket, Reservation, ShowSession, AstronomyShow, PlanetariumDome, ShowTheme,
 )
 from user.models import User
+from user.serializers import UserSerializer
 
 """Basic serializers"""
 
@@ -53,12 +54,6 @@ class ReservationSerializer(serializers.ModelSerializer):
         fields = ("created_at", "user")
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("username", 'first_name', 'last_name', 'email')
-
-
 """Custom Serializers for model Ticket"""
 
 
@@ -91,6 +86,7 @@ class TicketCreateSerializer(TicketSerializer):
             attrs["show_session"].planetarium_dome.seats_in_row,
             serializers.ValidationError
         )
+        return attrs
 
 
 class UserTicketSerializer(UserSerializer):
@@ -125,7 +121,8 @@ class AstronomyShowTicketSerializer(AstronomyShowSerializer):
         model = AstronomyShow
         fields = ("show_name", "show_theme")
 
-    def get_show_theme(self, obj):
+    @staticmethod
+    def get_show_theme(obj):
         show_themes = obj.show_theme.all()
         return [theme.name for theme in show_themes]
 

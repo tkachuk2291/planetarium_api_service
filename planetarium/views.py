@@ -1,8 +1,10 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from planetarium.models import Ticket, AstronomyShow, PlanetariumDome, ShowSession, Reservation, ShowTheme
+from planetarium.permissions import IsAdminOrIfAuthenticatedReadOnly
 from planetarium.serializers import TicketSerializer, TicketDetailSerializer, TicketCreateSerializer, \
     TicketListSerializer, AstronomyShowListSerializer, AstronomyShowCreateSerializer, PlanetariumDomeListSerializer, \
     PlanetariumDomeCreateSerializer, ShowSessionListSerializer, ShowSessionCreateSerializer, ShowThemeSerializer, \
@@ -12,6 +14,7 @@ from planetarium.serializers import TicketSerializer, TicketDetailSerializer, Ti
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all().select_related()
     serializer_class = TicketSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -46,6 +49,7 @@ class TicketViewSet(viewsets.ModelViewSet):
 class AstronomyShowViewSet(viewsets.ModelViewSet):
     queryset = AstronomyShow.objects.all().prefetch_related('show_theme')
     serializer_class = AstronomyShowListSerializer
+    permission_classes = [IsAdminOrIfAuthenticatedReadOnly]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -64,7 +68,6 @@ class AstronomyShowViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
     """filtering for query_params 'title', 'description' , 'show_theme' """
 
@@ -86,6 +89,7 @@ class AstronomyShowViewSet(viewsets.ModelViewSet):
 class PlanetariumDomeViewSet(viewsets.ModelViewSet):
     queryset = PlanetariumDome.objects.all()
     serializer_class = PlanetariumDomeListSerializer
+    permission_classes = [IsAdminOrIfAuthenticatedReadOnly]
     """filtering for query_params 'planetarium_name' , 'rows' , 'seats_in_row' """
 
     def get_queryset(self):
@@ -124,6 +128,7 @@ class PlanetariumDomeViewSet(viewsets.ModelViewSet):
 class ShowSessionViewSet(viewsets.ModelViewSet):
     queryset = ShowSession.objects.all().select_related("astronomy_show", "planetarium_dome")
     serializer_class = ShowSessionListSerializer
+    permission_classes = [IsAdminOrIfAuthenticatedReadOnly]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -153,6 +158,7 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
 class ShowThemeViewSet(viewsets.ModelViewSet):
     queryset = ShowTheme.objects.all()
     serializer_class = ShowThemeSerializer
+    permission_classes = [IsAdminOrIfAuthenticatedReadOnly]
     """filtering for query_params 'name' """
 
     def get_queryset(self):
