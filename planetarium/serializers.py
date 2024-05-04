@@ -29,17 +29,11 @@ class ShowSessionSerializer(serializers.ModelSerializer):
 
 
 class PlanetariumDomeSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False, allow_null=True)
+
     class Meta:
         model = PlanetariumDome
         fields = ("rows", "seats_in_row", "image")
-
-    def validate(self, attrs):
-        PlanetariumDome.validate_row_seats_in_row(
-            attrs["rows"],
-            attrs["seats_in_row"],
-            serializers.ValidationError
-        )
-        return attrs
 
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -166,7 +160,7 @@ class AstronomyShowCreateSerializer(AstronomyShowSerializer):
         fields = ("title", "description", "show_theme", "image")
 
 
-class AstronomyShowSerializer(serializers.ModelSerializer):
+class AstronomyShowImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanetariumDome
         fields = ("id", "image")
@@ -192,6 +186,14 @@ class PlanetariumDomeCreateSerializer(PlanetariumDomeSerializer):
     class Meta:
         model = PlanetariumDome
         fields = ("name", "rows", "seats_in_row", "image")
+
+    def validate(self, attrs):
+        PlanetariumDome.validate_row_seats_in_row(
+            attrs["rows"],
+            attrs["seats_in_row"],
+            serializers.ValidationError
+        )
+        return attrs
 
 
 class PlanetariumDomeImageSerializer(serializers.ModelSerializer):
@@ -219,10 +221,9 @@ class ShowSessionCreateSerializer(ShowSessionSerializer):
 
 
 class ShowThemeCreateSerializer(ShowThemeSerializer):
-    name = serializers.CharField(read_only=True,
-                                 validators=[UniqueValidator(
-                                     queryset=PlanetariumDome.objects.all())]
-                                 )
+    name = serializers.CharField(validators=[UniqueValidator(
+        queryset=ShowTheme.objects.all())]
+    )
 
     class Meta:
         model = ShowTheme

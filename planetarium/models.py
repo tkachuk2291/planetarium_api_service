@@ -19,9 +19,14 @@ class AstronomyShow(models.Model):
     show_theme = models.ManyToManyField("ShowTheme", related_name="astronomy_show")
     image = models.ImageField(upload_to=astronomy_show_image_path, null=True)
 
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['title'], name='unique_title')
+        ]
+
     def __str__(self):
-        show_themes = ', '.join(theme.name for theme in self.show_theme.all())
-        return f"name_show : {self.title} , show_theme : {show_themes}"
+        self.show_themes = ', '.join(theme.name for theme in self.show_theme.all())
+        return f"name_show : {self.title} , description : {self.description} , show_theme : {self.show_themes}"
 
 
 class ShowTheme(models.Model):
@@ -55,7 +60,7 @@ class PlanetariumDome(models.Model):
     name = models.CharField(max_length=256)
     rows = models.IntegerField()
     seats_in_row = models.IntegerField()
-    image = models.ImageField(upload_to=image_path, null=True)
+    image = models.ImageField(upload_to=image_path, null=True, blank=True)
 
     class Meta:
         constraints = [

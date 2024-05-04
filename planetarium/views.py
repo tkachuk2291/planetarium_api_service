@@ -1,3 +1,5 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +10,7 @@ from planetarium.permissions import IsAdminOrIfAuthenticatedReadOnly
 from planetarium.serializers import TicketSerializer, TicketDetailSerializer, TicketCreateSerializer, \
     TicketListSerializer, AstronomyShowListSerializer, AstronomyShowCreateSerializer, PlanetariumDomeListSerializer, \
     PlanetariumDomeCreateSerializer, ShowSessionListSerializer, ShowSessionCreateSerializer, ShowThemeSerializer, \
-    PlanetariumDomeImageSerializer
+    PlanetariumDomeImageSerializer, AstronomyShowImageSerializer
 
 
 class TicketViewSet(viewsets.ModelViewSet):
@@ -45,6 +47,29 @@ class TicketViewSet(viewsets.ModelViewSet):
         reservation_obj = Reservation.objects.create(user=self.request.user)
         serializer.save(reservation=reservation_obj)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="show_session",
+                type=OpenApiTypes.STR,
+                description="Filter by show_session show_session(title)",
+            ),
+            OpenApiParameter(
+                name="reservation",
+                type=OpenApiTypes.STR,
+                description="Filter by reservation(username)",
+            ),
+            OpenApiParameter(
+                name="planetarium_dome",
+                type=OpenApiTypes.STR,
+                description="Filter by planetarium_dome(name)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """filtering for query_params 'show_session', 'reservation' , 'planetarium_dome' """
+        return super().list(request, *args, **kwargs)
+
 
 class AstronomyShowViewSet(viewsets.ModelViewSet):
     queryset = AstronomyShow.objects.all().prefetch_related('show_theme')
@@ -55,7 +80,7 @@ class AstronomyShowViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             return AstronomyShowListSerializer
         elif self.action == "upload_image":
-            return PlanetariumDomeImageSerializer
+            return AstronomyShowImageSerializer
         return AstronomyShowCreateSerializer
 
     @action(methods=['POST'],
@@ -84,6 +109,29 @@ class AstronomyShowViewSet(viewsets.ModelViewSet):
         if astronomy_show_description:
             queryset = queryset.filter(description__icontains=astronomy_show_description)
         return queryset.distinct()
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="show_theme",
+                type=OpenApiTypes.STR,
+                description="Filter by show_theme(name)",
+            ),
+            OpenApiParameter(
+                name="reservation",
+                type=OpenApiTypes.STR,
+                description="Filter by show_name(title)",
+            ),
+            OpenApiParameter(
+                name="description",
+                type=OpenApiTypes.STR,
+                description="Filter by description(description)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """filtering for query_params 'title', 'description' , 'show_theme' """
+        return super().list(request, *args, **kwargs)
 
 
 class PlanetariumDomeViewSet(viewsets.ModelViewSet):
@@ -124,6 +172,29 @@ class PlanetariumDomeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="planetarium_name",
+                type=OpenApiTypes.STR,
+                description="Filter by planetarium_name(name)",
+            ),
+            OpenApiParameter(
+                name="rows",
+                type=OpenApiTypes.INT,
+                description="Filter by rows(rows)",
+            ),
+            OpenApiParameter(
+                name="seats_in_row",
+                type=OpenApiTypes.INT,
+                description="Filter by seats_in_row(seats_in_row)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """filtering for query_params 'planetarium_name' , 'rows' , 'seats_in_row' """
+        return super().list(request, *args, **kwargs)
+
 
 class ShowSessionViewSet(viewsets.ModelViewSet):
     queryset = ShowSession.objects.all().select_related("astronomy_show", "planetarium_dome")
@@ -154,6 +225,35 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(show_time__exact=show_time)
         return queryset.distinct()
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="show_name",
+                type=OpenApiTypes.STR,
+                description="Filter by show_name(name)",
+            ),
+            OpenApiParameter(
+                name="description",
+                type=OpenApiTypes.STR,
+                description="Filter by description(description)",
+            ),
+            OpenApiParameter(
+                name="name",
+                type=OpenApiTypes.STR,
+                description="Filter by name(name)",
+            ),
+            OpenApiParameter(
+                name="name",
+                type=OpenApiTypes.DATE,
+                description="Filter by show_time(show_time)",
+            ),
+
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """filtering for query_params 'show_name', 'description' , 'name' """
+        return super().list(request, *args, **kwargs)
+
 
 class ShowThemeViewSet(viewsets.ModelViewSet):
     queryset = ShowTheme.objects.all()
@@ -167,3 +267,16 @@ class ShowThemeViewSet(viewsets.ModelViewSet):
         if name:
             queryset = queryset.filter(name__icontains=name)
         return queryset.distinct()
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="name",
+                type=OpenApiTypes.STR,
+                description="Filter by name(name)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """filtering for query_params 'name' """
+        return super().list(request, *args, **kwargs)
