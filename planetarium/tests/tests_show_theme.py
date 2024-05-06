@@ -26,7 +26,9 @@ class UnauthenticatedShowThemeApiTests(TestCase):
 class AuthenticatedShowThemeApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.user = user_test(username="default_user", password="defaultpassword122")
+        self.user = user_test(
+            username="default_user", password="defaultpassword122"
+        )
         self.client.force_authenticate(self.user)
 
     def test_list_show_theme(self):
@@ -40,19 +42,17 @@ class AuthenticatedShowThemeApiTests(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_not_create_show_theme(self):
-        payload = {
-            "name": "New Show Theme"
-        }
+        payload = {"name": "New Show Theme"}
         res = self.client.post(ShowTheme_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_admin_show_theme(self):
-        test_user = user_test(username="admin", password="testadmin26", is_staff=True)
+        test_user = user_test(
+            username="admin", password="testadmin26", is_staff=True
+        )
         self.client.force_authenticate(test_user)
 
-        payload = {
-            "name": "New Show Theme"
-        }
+        payload = {"name": "New Show Theme"}
         res = self.client.post(ShowTheme_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
@@ -60,7 +60,9 @@ class AuthenticatedShowThemeApiTests(TestCase):
 class ShowThemeFilteringApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.user = user_test(username="default_user", password="defaultpassword122")
+        self.user = user_test(
+            username="default_user", password="defaultpassword122"
+        )
         self.client.force_authenticate(self.user)
 
     def test_filter_show_theme_name(self):
@@ -82,22 +84,22 @@ class ShowThemeFilteringApiTests(TestCase):
 class ShowThemeValidateViewTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.user = user_test(username="default_user", password="testpassswod123")
+        self.user = user_test(
+            username="default_user", password="testpassswod123"
+        )
         self.client.force_authenticate(self.user)
 
     def test_validate_show_theme_name_models(self):
         with self.assertRaises(IntegrityError):
-            show_theme_object2 = sample_show_theme(
-                name="Test Astronomy"
-            )
-            show_theme_object_3 = sample_show_theme(
-                name="Test Astronomy"
-            )
+            show_theme_object2 = sample_show_theme(name="Test Astronomy")
+            show_theme_object_3 = sample_show_theme(name="Test Astronomy")
 
     def test_validate_astronomy_show_name_serializer(self):
         with self.assertRaises(ValidationError):
             sample_show_theme()
-            payload = {"name": "New ShowTheme", }
+            payload = {
+                "name": "New ShowTheme",
+            }
             serializer = ShowThemeSerializer(data=payload)
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -111,7 +113,9 @@ class ShowThemeValidateViewTests(TestCase):
 class ShowThemeModelsTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.user = user_test(username="default_user", password="defaultpassword122")
+        self.user = user_test(
+            username="default_user", password="defaultpassword122"
+        )
         self.client.force_authenticate(self.user)
 
     def test_show_theme_str(self):

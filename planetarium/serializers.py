@@ -2,7 +2,12 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
 from planetarium.models import (
-    Ticket, Reservation, ShowSession, AstronomyShow, PlanetariumDome, ShowTheme,
+    Ticket,
+    Reservation,
+    ShowSession,
+    AstronomyShow,
+    PlanetariumDome,
+    ShowTheme,
 )
 from user.models import User
 from user.serializers import UserSerializer
@@ -52,13 +57,26 @@ class ReservationSerializer(serializers.ModelSerializer):
 
 
 class TicketListSerializer(TicketSerializer):
-    show_session = serializers.CharField(source="show_session.astronomy_show.title", read_only=True)
-    reservation = serializers.CharField(source="reservation.user", read_only=True)
-    planetarium_dome = serializers.CharField(source="show_session.planetarium_dome.name", read_only=True)
+    show_session = serializers.CharField(
+        source="show_session.astronomy_show.title", read_only=True
+    )
+    reservation = serializers.CharField(
+        source="reservation.user", read_only=True
+    )
+    planetarium_dome = serializers.CharField(
+        source="show_session.planetarium_dome.name", read_only=True
+    )
 
     class Meta:
         model = Ticket
-        fields = ("id", "row", "seat", "show_session", "reservation", "planetarium_dome")
+        fields = (
+            "id",
+            "row",
+            "seat",
+            "show_session",
+            "reservation",
+            "planetarium_dome",
+        )
 
 
 class TicketCreateSerializer(TicketSerializer):
@@ -67,8 +85,7 @@ class TicketCreateSerializer(TicketSerializer):
         fields = ("id", "row", "seat", "show_session")
         validators = [
             UniqueTogetherValidator(
-                queryset=Ticket.objects.all(),
-                fields=['row', 'seat']
+                queryset=Ticket.objects.all(), fields=["row", "seat"]
             )
         ]
 
@@ -78,7 +95,7 @@ class TicketCreateSerializer(TicketSerializer):
             attrs["show_session"].planetarium_dome.rows,
             attrs["seat"],
             attrs["show_session"].planetarium_dome.seats_in_row,
-            serializers.ValidationError
+            serializers.ValidationError,
         )
         return attrs
 
@@ -152,8 +169,9 @@ class AstronomyShowListSerializer(AstronomyShowSerializer):
 
 
 class AstronomyShowCreateSerializer(AstronomyShowSerializer):
-    title = serializers.CharField(validators=[UniqueValidator(
-        queryset=AstronomyShow.objects.all())])
+    title = serializers.CharField(
+        validators=[UniqueValidator(queryset=AstronomyShow.objects.all())]
+    )
 
     class Meta:
         model = AstronomyShow
@@ -179,8 +197,7 @@ class PlanetariumDomeListSerializer(PlanetariumDomeSerializer):
 
 class PlanetariumDomeCreateSerializer(PlanetariumDomeSerializer):
     name = serializers.CharField(
-        validators=[UniqueValidator(
-            queryset=PlanetariumDome.objects.all())]
+        validators=[UniqueValidator(queryset=PlanetariumDome.objects.all())]
     )
 
     class Meta:
@@ -189,9 +206,7 @@ class PlanetariumDomeCreateSerializer(PlanetariumDomeSerializer):
 
     def validate(self, attrs):
         PlanetariumDome.validate_row_seats_in_row(
-            attrs["rows"],
-            attrs["seats_in_row"],
-            serializers.ValidationError
+            attrs["rows"], attrs["seats_in_row"], serializers.ValidationError
         )
         return attrs
 
@@ -221,8 +236,8 @@ class ShowSessionCreateSerializer(ShowSessionSerializer):
 
 
 class ShowThemeCreateSerializer(ShowThemeSerializer):
-    name = serializers.CharField(validators=[UniqueValidator(
-        queryset=ShowTheme.objects.all())]
+    name = serializers.CharField(
+        validators=[UniqueValidator(queryset=ShowTheme.objects.all())]
     )
 
     class Meta:

@@ -6,7 +6,7 @@ from planetarium.models import (
     ShowTheme,
     ShowSession,
     AstronomyShow,
-    PlanetariumDome
+    PlanetariumDome,
 )
 
 admin.site.register(AstronomyShow)

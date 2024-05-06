@@ -2,13 +2,17 @@ from xxlimited_35 import Null
 
 from django.contrib.auth import get_user_model
 
-from planetarium.models import ShowTheme, AstronomyShow, PlanetariumDome, Ticket, ShowSession
+from planetarium.models import (
+    ShowTheme,
+    AstronomyShow,
+    PlanetariumDome,
+    Ticket,
+    ShowSession,
+)
 
 
 def sample_show_theme(**params):
-    defaults = {
-        "name": "Sample Theme"
-    }
+    defaults = {"name": "Sample Theme"}
     defaults.update(params)
     return ShowTheme.objects.create(**params)
 
@@ -37,7 +41,7 @@ def sample_show_session(**params):
     defaults = {
         "astronomy_show": sample_astronomy_show(),
         "planetarium_dome": sample_planetarium_dome(),
-        "show_time": "2024-05-19"
+        "show_time": "2024-05-19",
     }
     defaults.update(params)
     return ShowSession.objects.create(**defaults)
@@ -47,7 +51,7 @@ def sample_ticket(**params):
     defaults = {
         "row": 1,
         "seats_in_row": 2,
-        "show_session": sample_show_session()
+        "show_session": sample_show_session(),
     }
     defaults.update(params)
     return Ticket.objects.create(**defaults)
@@ -55,11 +59,10 @@ def sample_ticket(**params):
 
 def user_test(**params):
     defaults = {
-        'username': 'default_user',
-        'email': 'default@example.com',
-        'password': 'default_password'
+        "username": "default_user",
+        "email": "default@example.com",
+        "password": "default_password",
     }
     defaults.update(params)
     user = get_user_model().objects.create_user(**defaults)
     return user
-

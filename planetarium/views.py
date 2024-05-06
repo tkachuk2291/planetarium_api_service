@@ -5,12 +5,30 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from planetarium.models import Ticket, AstronomyShow, PlanetariumDome, ShowSession, Reservation, ShowTheme
+from planetarium.models import (
+    Ticket,
+    AstronomyShow,
+    PlanetariumDome,
+    ShowSession,
+    Reservation,
+    ShowTheme,
+)
 from planetarium.permissions import IsAdminOrIfAuthenticatedReadOnly
-from planetarium.serializers import TicketSerializer, TicketDetailSerializer, TicketCreateSerializer, \
-    TicketListSerializer, AstronomyShowListSerializer, AstronomyShowCreateSerializer, PlanetariumDomeListSerializer, \
-    PlanetariumDomeCreateSerializer, ShowSessionListSerializer, ShowSessionCreateSerializer, ShowThemeSerializer, \
-    PlanetariumDomeImageSerializer, AstronomyShowImageSerializer
+from planetarium.serializers import (
+    TicketSerializer,
+    TicketDetailSerializer,
+    TicketCreateSerializer,
+    TicketListSerializer,
+    AstronomyShowListSerializer,
+    AstronomyShowCreateSerializer,
+    PlanetariumDomeListSerializer,
+    PlanetariumDomeCreateSerializer,
+    ShowSessionListSerializer,
+    ShowSessionCreateSerializer,
+    ShowThemeSerializer,
+    PlanetariumDomeImageSerializer,
+    AstronomyShowImageSerializer,
+)
 
 
 class TicketViewSet(viewsets.ModelViewSet):
@@ -19,11 +37,11 @@ class TicketViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == "list":
             return TicketListSerializer
-        elif self.action == 'retrieve':
+        elif self.action == "retrieve":
             return TicketDetailSerializer
-        elif self.action == 'create':
+        elif self.action == "create":
             return TicketCreateSerializer
         return TicketListSerializer
 
@@ -36,11 +54,17 @@ class TicketViewSet(viewsets.ModelViewSet):
 
         queryset = self.queryset
         if show_session:
-            queryset = queryset.filter(show_session__astronomy_show__title__icontains=show_session)
+            queryset = queryset.filter(
+                show_session__astronomy_show__title__icontains=show_session
+            )
         if reservation:
-            queryset = queryset.filter(reservation__user__username__icontains=reservation)
+            queryset = queryset.filter(
+                reservation__user__username__icontains=reservation
+            )
         if planetarium_dome:
-            queryset = queryset.filter(show_session__planetarium_dome__name__icontains=planetarium_dome)
+            queryset = queryset.filter(
+                show_session__planetarium_dome__name__icontains=planetarium_dome
+            )
         return queryset.filter(reservation__user=self.request.user).distinct()
 
     def perform_create(self, serializer):
@@ -67,25 +91,23 @@ class TicketViewSet(viewsets.ModelViewSet):
         ]
     )
     def list(self, request, *args, **kwargs):
-        """filtering for query_params 'show_session', 'reservation' , 'planetarium_dome' """
+        """filtering for query_params 'show_session', 'reservation' , 'planetarium_dome'"""
         return super().list(request, *args, **kwargs)
 
 
 class AstronomyShowViewSet(viewsets.ModelViewSet):
-    queryset = AstronomyShow.objects.all().prefetch_related('show_theme')
+    queryset = AstronomyShow.objects.all().prefetch_related("show_theme")
     serializer_class = AstronomyShowListSerializer
     permission_classes = [IsAdminOrIfAuthenticatedReadOnly]
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == "list":
             return AstronomyShowListSerializer
         elif self.action == "upload_image":
             return AstronomyShowImageSerializer
         return AstronomyShowCreateSerializer
 
-    @action(methods=['POST'],
-            detail=True,
-            url_path='upload-image')
+    @action(methods=["POST"], detail=True, url_path="upload-image")
     def upload_image(self, request):
         astronomy_show = self.get_object()
         serializer = self.get_serializer(astronomy_show, data=request.data)
@@ -97,17 +119,27 @@ class AstronomyShowViewSet(viewsets.ModelViewSet):
     """filtering for query_params 'title', 'description' , 'show_theme' """
 
     def get_queryset(self):
-        astronomy_show_show_theme = self.request.query_params.get("show_theme")
+        astronomy_show_show_theme = self.request.query_params.get(
+            "show_theme"
+        )
         astronomy_show_show_name = self.request.query_params.get("show_name")
-        astronomy_show_description = self.request.query_params.get("description")
+        astronomy_show_description = self.request.query_params.get(
+            "description"
+        )
 
         queryset = self.queryset
         if astronomy_show_show_theme:
-            queryset = queryset.filter(show_theme__name__icontains=astronomy_show_show_theme)
+            queryset = queryset.filter(
+                show_theme__name__icontains=astronomy_show_show_theme
+            )
         if astronomy_show_show_name:
-            queryset = queryset.filter(title__icontains=astronomy_show_show_name)
+            queryset = queryset.filter(
+                title__icontains=astronomy_show_show_name
+            )
         if astronomy_show_description:
-            queryset = queryset.filter(description__icontains=astronomy_show_description)
+            queryset = queryset.filter(
+                description__icontains=astronomy_show_description
+            )
         return queryset.distinct()
 
     @extend_schema(
@@ -130,7 +162,7 @@ class AstronomyShowViewSet(viewsets.ModelViewSet):
         ]
     )
     def list(self, request, *args, **kwargs):
-        """filtering for query_params 'title', 'description' , 'show_theme' """
+        """filtering for query_params 'title', 'description' , 'show_theme'"""
         return super().list(request, *args, **kwargs)
 
 
@@ -155,15 +187,13 @@ class PlanetariumDomeViewSet(viewsets.ModelViewSet):
         return queryset.distinct()
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == "list":
             return PlanetariumDomeListSerializer
         elif self.action == "upload_image":
             return PlanetariumDomeImageSerializer
         return PlanetariumDomeCreateSerializer
 
-    @action(methods=['POST'],
-            detail=True,
-            url_path='upload-image')
+    @action(methods=["POST"], detail=True, url_path="upload-image")
     def upload_image(self, request):
         bus = self.get_object()
         serializer = self.get_serializer(bus, data=request.data)
@@ -192,17 +222,19 @@ class PlanetariumDomeViewSet(viewsets.ModelViewSet):
         ]
     )
     def list(self, request, *args, **kwargs):
-        """filtering for query_params 'planetarium_name' , 'rows' , 'seats_in_row' """
+        """filtering for query_params 'planetarium_name' , 'rows' , 'seats_in_row'"""
         return super().list(request, *args, **kwargs)
 
 
 class ShowSessionViewSet(viewsets.ModelViewSet):
-    queryset = ShowSession.objects.all().select_related("astronomy_show", "planetarium_dome")
+    queryset = ShowSession.objects.all().select_related(
+        "astronomy_show", "planetarium_dome"
+    )
     serializer_class = ShowSessionListSerializer
     permission_classes = [IsAdminOrIfAuthenticatedReadOnly]
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == "list":
             return ShowSessionListSerializer
         return ShowSessionCreateSerializer
 
@@ -210,17 +242,25 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         astronomy_show_title = self.request.query_params.get("show_name")
-        astronomy_show_description = self.request.query_params.get("description")
+        astronomy_show_description = self.request.query_params.get(
+            "description"
+        )
         planetarium_dome = self.request.query_params.get("name")
         show_time = self.request.query_params.get("show_time")
 
         queryset = self.queryset
         if astronomy_show_title:
-            queryset = queryset.filter(astronomy_show__title__icontains=astronomy_show_title)
+            queryset = queryset.filter(
+                astronomy_show__title__icontains=astronomy_show_title
+            )
         if astronomy_show_description:
-            queryset = queryset.filter(astronomy_show__description__icontains=astronomy_show_description)
+            queryset = queryset.filter(
+                astronomy_show__description__icontains=astronomy_show_description
+            )
         if planetarium_dome:
-            queryset = queryset.filter(planetarium_dome__name__icontains=planetarium_dome)
+            queryset = queryset.filter(
+                planetarium_dome__name__icontains=planetarium_dome
+            )
         if show_time:
             queryset = queryset.filter(show_time__exact=show_time)
         return queryset.distinct()
@@ -247,11 +287,10 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
                 type=OpenApiTypes.DATE,
                 description="Filter by show_time(show_time)",
             ),
-
         ]
     )
     def list(self, request, *args, **kwargs):
-        """filtering for query_params 'show_name', 'description' , 'name' """
+        """filtering for query_params 'show_name', 'description' , 'name'"""
         return super().list(request, *args, **kwargs)
 
 
@@ -278,5 +317,5 @@ class ShowThemeViewSet(viewsets.ModelViewSet):
         ]
     )
     def list(self, request, *args, **kwargs):
-        """filtering for query_params 'name' """
+        """filtering for query_params 'name'"""
         return super().list(request, *args, **kwargs)
