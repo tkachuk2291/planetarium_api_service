@@ -10,24 +10,26 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+from dotenv import load_dotenv
 from datetime import timedelta
 from pathlib import Path
+
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
+load_dotenv()
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
-    "django-insecure-#p-p)n$h@=^kubszshpf1&@v16%j256&+fg&&4&w5l&pv6)*t$"
-)
+SECRET_KEY = os.getenv("USERS_SECRET_KEY",)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1"]
 
 # Application definition
 
@@ -157,7 +159,7 @@ SIMPLE_JWT = {
 }
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Planetarium API Sevice",
+    "TITLE": "Planetarium API Service",
     "DESCRIPTION": "Convenient ticket reservations for sessions and more at any planetarium.",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,

@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.db import connections
 from django.db.utils import OperationalError
-from django.template.defaultfilters import time
+import time
 
 
 class Command(BaseCommand):
