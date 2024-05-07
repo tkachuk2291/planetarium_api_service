@@ -22,6 +22,10 @@ pip install -m requirements.txt
 ```shell
 touch .env  
 ```
+### Example of environment variables
+``` 
+ .env.sample 
+```
 
 ```
 set POSTGRES_USER=your db username  
@@ -52,6 +56,7 @@ create user via api/user/register
 ```
 get access token via api/token  
 ```
+
 
 
 

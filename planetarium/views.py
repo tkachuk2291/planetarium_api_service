@@ -111,7 +111,7 @@ class AstronomyShowViewSet(viewsets.ModelViewSet):
     def upload_image(self, request):
         astronomy_show = self.get_object()
         serializer = self.get_serializer(astronomy_show, data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -197,7 +197,7 @@ class PlanetariumDomeViewSet(viewsets.ModelViewSet):
     def upload_image(self, request):
         bus = self.get_object()
         serializer = self.get_serializer(bus, data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
