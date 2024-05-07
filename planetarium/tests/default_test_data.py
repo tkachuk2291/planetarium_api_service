@@ -1,5 +1,3 @@
-from xxlimited_35 import Null
-
 from django.contrib.auth import get_user_model
 
 from planetarium.models import (
