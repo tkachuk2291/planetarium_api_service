@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -13,7 +12,6 @@ class UserRegisterView(generics.CreateAPIView):
 
 class ManageUserView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
-    # authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
@@ -31,7 +29,6 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def upload_image(self, request):
         user = self.get_object()
         serializer = self.get_serializer(user, data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
