@@ -45,6 +45,15 @@ docker-compose build
 docker-compose up 
 ```
 
+### Getting access  
+```
+create user via api/user/register  
+```
+```
+get access token via api/token  
+```
+
+
 
 
 
