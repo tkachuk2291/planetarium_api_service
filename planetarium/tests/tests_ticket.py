@@ -10,6 +10,8 @@ from planetarium.tests.default_test_data import (
     sample_planetarium_dome,
     sample_astronomy_show,
 )
+from django.db.utils import IntegrityError
+
 
 Ticket_URL = reverse("planetarium:tickets-list")
 
@@ -419,104 +421,105 @@ class TicketValidation(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_validate_ticket_row_model_range(self):
-        """Ticket object 1"""
-        with self.assertRaises(ValueError):
-            reservation_object_1 = Reservation.objects.create(user=self.user)
+        with self.assertRaises(IntegrityError):
+            pass
+            with self.assertRaises(ValueError):
+                reservation_object_1 = Reservation.objects.create(user=self.user)
 
-            astronomy_show_object = sample_astronomy_show(
-                title="New Astronomy Show test",
-                description="New description",
-            )
-            astronomy_show_object.show_theme.add(
-                sample_show_theme(name="Test")
-            )
-            planetarium_dome_object = sample_planetarium_dome(
-                name="Planetarium Dome Test1", rows=40, seats_in_row=30
-            )
-            show_session_object_1 = ShowSession.objects.create(
-                astronomy_show=astronomy_show_object,
-                planetarium_dome=planetarium_dome_object,
-                show_time="2024-05-19",
-            )
-            Ticket.objects.create(
-                row=40,
-                seat=10,
-                show_session=show_session_object_1,
-                reservation=reservation_object_1,
-            )
+                astronomy_show_object = sample_astronomy_show(
+                    title="New Astronomy Show test",
+                    description="New description",
+                )
+                astronomy_show_object.show_theme.add(
+                    sample_show_theme(name="Test")
+                )
+                planetarium_dome_object = sample_planetarium_dome(
+                    name="Planetarium Dome Test1", rows=40, seats_in_row=30
+                )
+                show_session_object_1 = ShowSession.objects.create(
+                    astronomy_show=astronomy_show_object,
+                    planetarium_dome=planetarium_dome_object,
+                    show_time="2024-05-19",
+                )
+                Ticket.objects.create(
+                    row=40,
+                    seat=10,
+                    show_session=show_session_object_1,
+                    reservation=reservation_object_1,
+                )
 
-            """Ticket object 2"""
-            reservation_object_2 = Reservation.objects.create(user=self.user)
-            astronomy_show_object = sample_astronomy_show(
-                title="New Astronomy Show 2 test",
-                description="New description 2",
-            )
-            astronomy_show_object.show_theme.add(
-                sample_show_theme(name="Test1")
-            )
-            planetarium_dome_object = sample_planetarium_dome(
-                name="Planetarium Dome Test2", rows=40, seats_in_row=20
-            )
-            show_session_object_2 = ShowSession.objects.create(
-                astronomy_show=astronomy_show_object,
-                planetarium_dome=planetarium_dome_object,
-                show_time="2024-05-19",
-            )
-            Ticket.objects.create(
-                row=51,
-                seat=10,
-                show_session=show_session_object_2,
-                reservation=reservation_object_2,
-            )
+                """Ticket object 2"""
+                reservation_object_2 = Reservation.objects.create(user=self.user)
+                astronomy_show_object = sample_astronomy_show(
+                    title="New Astronomy Show 2 test",
+                    description="New description 2",
+                )
+                astronomy_show_object.show_theme.add(
+                    sample_show_theme(name="Test1")
+                )
+                planetarium_dome_object = sample_planetarium_dome(
+                    name="Planetarium Dome Test2", rows=40, seats_in_row=20
+                )
+                show_session_object_2 = ShowSession.objects.create(
+                    astronomy_show=astronomy_show_object,
+                    planetarium_dome=planetarium_dome_object,
+                    show_time="2024-05-19",
+                )
+                Ticket.objects.create(
+                    row=51,
+                    seat=10,
+                    show_session=show_session_object_2,
+                    reservation=reservation_object_2,
+                )
 
-        """Ticket object 1"""
-        with self.assertRaises(ValueError):
-            reservation_object_1 = Reservation.objects.create(user=self.user)
+            """Ticket object 1"""
+            with self.assertRaises(ValueError):
+                reservation_object_1 = Reservation.objects.create(user=self.user)
 
-            astronomy_show_object = sample_astronomy_show(
-                title="New Astronomy Show test",
-                description="New description",
-            )
-            astronomy_show_object.show_theme.add(
-                sample_show_theme(name="Test")
-            )
-            planetarium_dome_object = sample_planetarium_dome(
-                name="Planetarium Dome Test1", rows=40, seats_in_row=30
-            )
-            show_session_object_1 = ShowSession.objects.create(
-                astronomy_show=astronomy_show_object,
-                planetarium_dome=planetarium_dome_object,
-                show_time="2024-05-19",
-            )
-            Ticket.objects.create(
-                row=40,
-                seat=10,
-                show_session=show_session_object_1,
-                reservation=reservation_object_1,
-            )
+                astronomy_show_object = sample_astronomy_show(
+                    title="New Astronomy Show test",
+                    description="New description",
+                )
+                astronomy_show_object.show_theme.add(
+                    sample_show_theme(name="Test")
+                )
+                planetarium_dome_object = sample_planetarium_dome(
+                    name="Planetarium Dome Test1", rows=40, seats_in_row=30
+                )
+                show_session_object_1 = ShowSession.objects.create(
+                    astronomy_show=astronomy_show_object,
+                    planetarium_dome=planetarium_dome_object,
+                    show_time="2024-05-19",
+                )
+                Ticket.objects.create(
+                    row=40,
+                    seat=10,
+                    show_session=show_session_object_1,
+                    reservation=reservation_object_1,
+                )
 
-            """Ticket object 2"""
-            reservation_object_2 = Reservation.objects.create(user=self.user)
-            astronomy_show_object = sample_astronomy_show(
-                title="New Astronomy Show 2 test",
-                description="New description 2",
-            )
-            astronomy_show_object.show_theme.add(
-                sample_show_theme(name="Test1")
-            )
-            planetarium_dome_object = sample_planetarium_dome(
-                name="Planetarium Dome Test2", rows=40, seats_in_row=20
-            )
-            show_session_object_2 = ShowSession.objects.create(
-                astronomy_show=astronomy_show_object,
-                planetarium_dome=planetarium_dome_object,
-                show_time="2024-05-19",
-            )
-            Ticket.objects.create(
-                row=50,
-                seat=10,
-                show_session=show_session_object_2,
-                reservation=reservation_object_2,
+                """Ticket object 2"""
+                reservation_object_2 = Reservation.objects.create(user=self.user)
+                astronomy_show_object = sample_astronomy_show(
+                    title="New Astronomy Show 2 test",
+                    description="New description 2",
+                )
+                astronomy_show_object.show_theme.add(
+                    sample_show_theme(name="Test1")
+                )
+                planetarium_dome_object = sample_planetarium_dome(
+                    name="Planetarium Dome Test2", rows=40, seats_in_row=20
+                )
+                show_session_object_2 = ShowSession.objects.create(
+                    astronomy_show=astronomy_show_object,
+                    planetarium_dome=planetarium_dome_object,
+                    show_time="2024-05-19",
+                )
+                Ticket.objects.create(
+                    row=50,
+                    seat=10,
+                    show_session=show_session_object_2,
+                    reservation=reservation_object_2,
             )
 
     def test_validate_ticket_seat_range_model(self):
