@@ -10,13 +10,13 @@ git clone https://github.com/tkachuk2291/planetarium_api_service.git
 cd planetarium_api_service  
 ```
 ```shell
-python -m venv venv  
+python3 -m venv venv  
 ``` 
 ```shell
 source venv/bin/activate  
 ```
 ```shell
-pip install -m requirements.txt  
+pip install -r requirements.txt  
 ```
 ### Setting up Environment Variables
 ```shell
